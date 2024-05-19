@@ -6,7 +6,7 @@
 
     <resultMap id="BaseResultMap" type="com.manage.seatManage.model.domain.Seat">
             <id property="id" column="id" jdbcType="BIGINT"/>
-            <result property="seatNumber" column="seatNumber" jdbcType="VARCHAR"/>
+            <result property="seatNumber" column="seatNumber" jdbcType="INTEGER"/>
             <result property="floor" column="floor" jdbcType="INTEGER"/>
             <result property="expireTime" column="expireTime" jdbcType="TIMESTAMP"/>
             <result property="userId" column="userId" jdbcType="BIGINT"/>

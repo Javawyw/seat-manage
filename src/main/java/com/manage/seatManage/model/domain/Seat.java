@@ -4,6 +4,8 @@ import com.baomidou.mybatisplus.annotation.*;
 
 import java.io.Serializable;
 import java.util.Date;
+
+import io.swagger.models.auth.In;
 import lombok.Data;
 
 /**
@@ -22,7 +24,7 @@ public class Seat implements Serializable {
     /**
      * 座位号
      */
-    private String seatNumber;
+    private Integer seatNumber;
 
     /**
      * 楼层

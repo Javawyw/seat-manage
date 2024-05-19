@@ -1,8 +1,11 @@
 package com.manage.seatManage.service;
 
+import com.manage.seatManage.model.DTO.SeatQuery;
 import com.manage.seatManage.model.domain.Seat;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.manage.seatManage.model.domain.User;
+
+import java.util.List;
 
 /**
 * @author lenovo
@@ -20,6 +23,21 @@ public interface SeatService extends IService<Seat> {
      *
      */
     int updateSeat(Seat seat, User loginUser);
+
+    /**
+     * 座位预约
+     */
+    boolean reservationSeat(Seat seat,User loginUser);
+
+    /**
+     * 座位取消
+     */
+    int cancelSeat(Seat seat,User loginUser);
+
+    /**
+     * 得到座位信息
+     */
+    List<Seat> getSeatInfo(SeatQuery seatQuery,User loginUser);
 
 
 }

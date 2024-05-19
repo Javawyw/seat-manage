@@ -1,10 +1,13 @@
 package com.manage.seatManage.controller;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.manage.seatManage.Constant.UserConstant;
 import com.manage.seatManage.common.BaseResponse;
 import com.manage.seatManage.common.ErrorCode;
 import com.manage.seatManage.common.ResultUtils;
 import com.manage.seatManage.exception.BusinessException;
+import com.manage.seatManage.model.DTO.SeatQuery;
 import com.manage.seatManage.model.domain.Seat;
 import com.manage.seatManage.model.domain.User;
 import com.manage.seatManage.service.SeatService;
@@ -12,7 +15,10 @@ import com.manage.seatManage.service.UserService;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 
 @RestController
@@ -68,6 +74,34 @@ public class SeatController implements UserConstant {
         boolean result = seatService.removeById(id);
 
         return ResultUtils.success(result);
+    }
+
+    @PostMapping("/reservationSeat")
+    public BaseResponse<Boolean> seatReservation(@RequestBody Seat seat,HttpServletRequest httpServletRequest){
+        if (seat==null){
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        User loginUser = userService.getLoginUser(httpServletRequest);
+        if (loginUser==null){
+            throw new BusinessException(ErrorCode.NO_LOGIN);
+        }
+        boolean res = seatService.reservationSeat(seat,loginUser);
+
+        return ResultUtils.success(res);
+    }
+
+    @GetMapping("/list")
+    public BaseResponse<Page<Seat>> getSeat(SeatQuery seatQuery){
+        if (seatQuery == null) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        Seat seat = new Seat();
+        BeanUtils.copyProperties(seatQuery, seat);
+        Page<Seat> page = new Page<>(seatQuery.getPageNum(), seatQuery.getPageSize());
+        QueryWrapper<Seat> queryWrapper = new QueryWrapper<>(seat);
+        Page<Seat> resultPage = seatService.page(page, queryWrapper);
+
+        return ResultUtils.success(resultPage);
 
     }
 }

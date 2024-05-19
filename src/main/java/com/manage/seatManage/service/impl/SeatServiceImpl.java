@@ -1,24 +1,35 @@
 package com.manage.seatManage.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
+import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.manage.seatManage.common.ErrorCode;
 import com.manage.seatManage.exception.BusinessException;
+import com.manage.seatManage.model.DTO.SeatQuery;
 import com.manage.seatManage.model.domain.Seat;
 import com.manage.seatManage.model.domain.User;
+import com.manage.seatManage.model.domain.UserSeat;
 import com.manage.seatManage.service.SeatService;
 import com.manage.seatManage.mapper.SeatMapper;
+import com.manage.seatManage.service.UserSeatService;
 import com.manage.seatManage.service.UserService;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
 /**
-* @author lenovo
-* @description 针对表【seat(座位表)】的数据库操作Service实现
-* @createDate 2024-05-16 23:44:34
-*/
+ * @author lenovo
+ * @description 针对表【seat(座位表)】的数据库操作Service实现
+ * @createDate 2024-05-16 23:44:34
+ */
 @Service
 public class SeatServiceImpl extends ServiceImpl<SeatMapper, Seat>
-    implements SeatService{
+        implements SeatService {
 
 
     @Resource
@@ -26,6 +37,9 @@ public class SeatServiceImpl extends ServiceImpl<SeatMapper, Seat>
 
     @Resource
     private SeatMapper seatMapper;
+
+    @Resource
+    private UserSeatService userSeatService;
 
 
     @Override
@@ -57,19 +71,97 @@ public class SeatServiceImpl extends ServiceImpl<SeatMapper, Seat>
         if (seatId <= 0) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
-        //2如果不是管理员，只能自己修改自己
-        //3只有管理员才可以修改学生信息
+        //2管理员修改座位信息
         if (!userService.isAdmin(loginUser)) {
             throw new BusinessException(ErrorCode.NO_AUTH);
         }
 
         Seat oldSeat = seatMapper.selectById(seatId);
-        //4没有该用户
+        //3没有该座位
         if (oldSeat == null) {
             throw new BusinessException(ErrorCode.PARAMS_NULL_ERROR);
         }
 
         return seatMapper.updateById(seat);
+
+
+    }
+
+    @Override
+    public boolean reservationSeat(Seat seat, User loginUser) {
+        if (seat == null) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        //1.先找到该座位
+        //2.找到之后判断是否已经占用或者已经被预约
+        long seatId = seat.getId();
+        if (seatId <= 0) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        Seat choiceSeat = seatMapper.selectById(seatId);
+        if (choiceSeat == null) {
+            throw new BusinessException(ErrorCode.PARAMS_NULL_ERROR);
+        }
+        if (choiceSeat.getStatus() == 1 || choiceSeat.getStatus() == 2) {
+            throw new BusinessException(ErrorCode.FORBIDDEN, "该座位已被占用或已预约");
+        }
+        long userId = loginUser.getId();
+        //预约成功，修改学生座位关系
+        UserSeat userSeat = new UserSeat();
+        userSeat.setSeatId(seatId);
+        userSeat.setUserId(userId);
+        userSeat.setJoinTime(new Date());
+
+        //修改status
+        UpdateWrapper<Seat> updateWrapper = new UpdateWrapper<>();
+        updateWrapper.eq("id",seatId);
+        updateWrapper.set("status",2);
+        seatMapper.update(updateWrapper);
+
+        return userSeatService.save(userSeat);
+
+    }
+
+    @Override
+    public int cancelSeat(Seat seat, User loginUser) {
+        return 0;
+    }
+
+    @Override
+    public List<Seat> getSeatInfo(SeatQuery seatQuery, User loginUser) {
+        if (seatQuery==null){
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        QueryWrapper<Seat> queryWrapper = new QueryWrapper<>();
+
+        if (seatQuery!=null){
+
+            List<Long> idList = seatQuery.getIdList();
+            if (CollectionUtils.isNotEmpty(idList)){
+                queryWrapper.eq("id",idList);
+            }
+            int seatNum = seatQuery.getSeatNumber();
+            if (seatNum>=0){
+                queryWrapper.eq("seatNum",seatNum);
+            }
+
+            int floor = seatQuery.getFloor();
+            if (floor>=0){
+                queryWrapper.eq("floor",floor);
+            }
+            int status = seatQuery.getStatus();
+            if (status==1||status==2||status==0){
+                queryWrapper.eq("status",status);
+            }
+
+        }
+        List<Seat> seatList = this.list(queryWrapper);
+        if (seatList==null){
+            return new ArrayList<>();
+        }
+
+        return seatList;
+
 
 
 

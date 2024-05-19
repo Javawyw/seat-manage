@@ -20,7 +20,7 @@ create table user
 create table seat
 (
     id         bigint auto_increment comment 'id' primary key,
-    seatNumber varchar(255)                       null comment '座位号',
+    seatNumber int                null comment '座位号',
     floor      int                                null comment '楼层',
 
     expireTime datetime                           null comment '过期时间',
@@ -32,7 +32,7 @@ create table seat
 ) comment '座位表';
 
 -- 用户座位关系
-create table user_team
+create table user_seat
 (
     id             bigint auto_increment comment 'id'
         primary key,
