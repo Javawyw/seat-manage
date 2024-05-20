@@ -116,6 +116,7 @@ public class SeatServiceImpl extends ServiceImpl<SeatMapper, Seat>
         UpdateWrapper<Seat> updateWrapper = new UpdateWrapper<>();
         updateWrapper.eq("id",seatId);
         updateWrapper.set("status",2);
+        updateWrapper.set("choiceTime",choiceSeat.getChoiceTime());
         seatMapper.update(updateWrapper);
 
         return userSeatService.save(userSeat);

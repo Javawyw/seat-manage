@@ -44,4 +44,10 @@ public interface SeatService extends IService<Seat> {
      * 得到我预约的座位
      */
     List<Seat> listSeat(MySeatQuery mySeatQuery,User loginUser);
+
+    /**
+     * 展现可预约时间
+     */
+
+
 }

@@ -8,9 +8,8 @@
         <id property="id" column="id" jdbcType="BIGINT"/>
         <result property="seatNumber" column="seatNumber" jdbcType="INTEGER"/>
         <result property="floor" column="floor" jdbcType="INTEGER"/>
-        <result property="expireTime" column="expireTime" jdbcType="TIMESTAMP"/>
+        <result property="choiceTime" column="choiceTime" jdbcType="TIMESTAMP"/>
         <result property="type_" column="type_" jdbcType="INTEGER"/>
-        <result property="userId" column="userId" jdbcType="BIGINT"/>
         <result property="status" column="status" jdbcType="INTEGER"/>
         <result property="createTime" column="createTime" jdbcType="TIMESTAMP"/>
         <result property="updateTime" column="updateTime" jdbcType="TIMESTAMP"/>
@@ -20,7 +19,7 @@
     <sql id="Base_Column_List">
         id
         ,seatNumber,floor,type_,
-        expireTime,userId,status,
+        choiceTime,userId,status,
         createTime,updateTime,isDelete
     </sql>
 </mapper>

@@ -133,6 +133,5 @@ public class SeatController implements UserConstant {
         boolean res = seatService.cancelSeat(id,loginUser);
 
         return ResultUtils.success(res);
-
     }
 }

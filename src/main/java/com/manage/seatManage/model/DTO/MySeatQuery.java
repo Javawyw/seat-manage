@@ -40,6 +40,6 @@ public class MySeatQuery extends PageRequest implements Serializable {
     /**
      * 过期时间
      */
-    private Date expireTime;
+    private Date choiceTime;
 
 }

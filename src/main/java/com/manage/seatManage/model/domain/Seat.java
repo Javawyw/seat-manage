@@ -37,7 +37,7 @@ public class Seat implements Serializable {
     /**
      * 过期时间
      */
-    private Date expireTime;
+    private Date choiceTime;
 
     /**
      * 0 - 可预约，1 - 已预约，2 - 已占用
