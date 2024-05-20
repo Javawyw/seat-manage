@@ -3,10 +3,10 @@ package com.manage.seatManage.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
-import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.manage.seatManage.common.ErrorCode;
 import com.manage.seatManage.exception.BusinessException;
+import com.manage.seatManage.model.DTO.MySeatQuery;
 import com.manage.seatManage.model.DTO.SeatQuery;
 import com.manage.seatManage.model.domain.Seat;
 import com.manage.seatManage.model.domain.User;
@@ -122,9 +122,35 @@ public class SeatServiceImpl extends ServiceImpl<SeatMapper, Seat>
 
     }
 
+
     @Override
-    public int cancelSeat(Seat seat, User loginUser) {
-        return 0;
+    public boolean cancelSeat(int id, User loginUser) {
+
+        //1.得到我预约的座位(已实现)
+        //2.删除用户座位表中的一行数据
+        //3.座位表status更新为0
+        if (id<=0){
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        if (loginUser==null){
+            throw new BusinessException(ErrorCode.NO_LOGIN);
+        }
+        //2
+        QueryWrapper<UserSeat> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("seatId",id);
+        userSeatService.remove(queryWrapper);
+        //3
+        //修改status
+        UpdateWrapper<Seat> updateWrapper = new UpdateWrapper<>();
+        updateWrapper.eq("id",id);
+        updateWrapper.set("status",0);
+        int update = seatMapper.update(updateWrapper);
+        if (update!=id){
+            return false;
+        }
+        return true;
+
+
     }
 
     @Override
@@ -162,9 +188,32 @@ public class SeatServiceImpl extends ServiceImpl<SeatMapper, Seat>
 
         return seatList;
 
+    }
 
 
 
+    @Override
+    public List<Seat> listSeat(MySeatQuery mySeatQuery, User loginUser) {
+        if (mySeatQuery==null){
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        if (loginUser==null){
+            throw new BusinessException(ErrorCode.NO_LOGIN);
+        }
+        //通过userid得到seatId
+        //通过seatId得到seat信息
+        QueryWrapper<UserSeat> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("userId",loginUser.getId());
+        List<UserSeat> userSeatList = userSeatService.list(queryWrapper);
+
+        QueryWrapper<Seat> seatQueryWrapper = new QueryWrapper<>();
+        List<Seat> seatList = new ArrayList<>();
+        for (UserSeat userSeat : userSeatList) {
+            Long seatId  = userSeat.getSeatId();
+            Seat seat = seatMapper.selectById(seatId);
+            seatList.add(seat);
+        }
+        return seatList;
     }
 
 }

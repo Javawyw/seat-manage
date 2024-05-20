@@ -22,7 +22,7 @@ create table seat
     id         bigint auto_increment comment 'id' primary key,
     seatNumber int                null comment '座位号',
     floor      int                                null comment '楼层',
-
+    type       int                                null comment '区域'
     expireTime datetime                           null comment '过期时间',
     userId     bigint comment '用户id（队长 id）',
     status     int      default 0                 not null comment '0 - 可预约，1 - 已预约，2 - 已占用',

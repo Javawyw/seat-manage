@@ -30,16 +30,14 @@ public class Seat implements Serializable {
      * 楼层
      */
     private Integer floor;
-
+    /**
+     * 区域
+     */
+    private Integer type_;
     /**
      * 过期时间
      */
     private Date expireTime;
-
-    /**
-     * 用户id（队长 id）
-     */
-    private Long userId;
 
     /**
      * 0 - 可预约，1 - 已预约，2 - 已占用

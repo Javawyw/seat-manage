@@ -12,14 +12,18 @@ import java.util.List;
  * 座位表
  * @TableName seat
  */
+@TableName(value ="seat")
 @Data
-public class SeatQuery extends PageRequest implements Serializable {
+public class MySeatQuery extends PageRequest implements Serializable {
     /**
      * id
      */
-
+    @TableId(type = IdType.AUTO)
+    private Long id;
+    /**
+     * 所有预约的座位id
+     */
     private List<Long> idList;
-
     /**
      * 座位号
      */
@@ -33,14 +37,9 @@ public class SeatQuery extends PageRequest implements Serializable {
      * 区域
      */
     private Integer type_;
-
     /**
      * 过期时间
      */
     private Date expireTime;
 
-    /**
-     * 0 - 可预约，1 - 已预约，2 - 已占用
-     */
-    private Integer status;
 }

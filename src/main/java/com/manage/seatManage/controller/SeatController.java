@@ -7,10 +7,13 @@ import com.manage.seatManage.common.BaseResponse;
 import com.manage.seatManage.common.ErrorCode;
 import com.manage.seatManage.common.ResultUtils;
 import com.manage.seatManage.exception.BusinessException;
+import com.manage.seatManage.model.DTO.MySeatQuery;
 import com.manage.seatManage.model.DTO.SeatQuery;
 import com.manage.seatManage.model.domain.Seat;
 import com.manage.seatManage.model.domain.User;
+import com.manage.seatManage.model.domain.UserSeat;
 import com.manage.seatManage.service.SeatService;
+import com.manage.seatManage.service.UserSeatService;
 import com.manage.seatManage.service.UserService;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
@@ -18,6 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -31,6 +35,9 @@ public class SeatController implements UserConstant {
 
     @Resource
     private UserService userService;
+
+    @Resource
+    private UserSeatService userSeatService;
 
 
     @PostMapping("/add")
@@ -97,11 +104,35 @@ public class SeatController implements UserConstant {
         }
         Seat seat = new Seat();
         BeanUtils.copyProperties(seatQuery, seat);
+
         Page<Seat> page = new Page<>(seatQuery.getPageNum(), seatQuery.getPageSize());
         QueryWrapper<Seat> queryWrapper = new QueryWrapper<>(seat);
         Page<Seat> resultPage = seatService.page(page, queryWrapper);
 
         return ResultUtils.success(resultPage);
+
+    }
+    @GetMapping("/list/my/seat")
+    public BaseResponse<List<Seat>> getMySeat(MySeatQuery mySeatQuery, HttpServletRequest httpServletRequest){
+        if (mySeatQuery==null){
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        User loginUser = userService.getLoginUser(httpServletRequest);
+        List<Seat> seatList = seatService.listSeat(mySeatQuery,loginUser);
+
+        return ResultUtils.success(seatList);
+
+    }
+    @PostMapping("/cancel")
+    public BaseResponse<Boolean> cancelSeat(@RequestBody  int id,HttpServletRequest httpServletRequest){
+        if (id<=0){
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+
+        }
+        User loginUser = userService.getLoginUser(httpServletRequest);
+        boolean res = seatService.cancelSeat(id,loginUser);
+
+        return ResultUtils.success(res);
 
     }
 }
