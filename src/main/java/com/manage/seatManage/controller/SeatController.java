@@ -7,6 +7,7 @@ import com.manage.seatManage.common.BaseResponse;
 import com.manage.seatManage.common.ErrorCode;
 import com.manage.seatManage.common.ResultUtils;
 import com.manage.seatManage.exception.BusinessException;
+import com.manage.seatManage.model.DTO.AllSeatQuery;
 import com.manage.seatManage.model.DTO.MySeatQuery;
 import com.manage.seatManage.model.DTO.SeatQuery;
 import com.manage.seatManage.model.domain.Seat;
@@ -97,7 +98,7 @@ public class SeatController implements UserConstant {
         return ResultUtils.success(res);
     }
 
-    @GetMapping("/list")
+    @GetMapping("/page")
     public BaseResponse<Page<Seat>> getSeat(SeatQuery seatQuery){
         if (seatQuery == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
@@ -107,6 +108,7 @@ public class SeatController implements UserConstant {
 
         Page<Seat> page = new Page<>(seatQuery.getPageNum(), seatQuery.getPageSize());
         QueryWrapper<Seat> queryWrapper = new QueryWrapper<>(seat);
+        queryWrapper.eq("status",0);
         Page<Seat> resultPage = seatService.page(page, queryWrapper);
 
         return ResultUtils.success(resultPage);
@@ -133,5 +135,18 @@ public class SeatController implements UserConstant {
         boolean res = seatService.cancelSeat(id,loginUser);
 
         return ResultUtils.success(res);
+    }
+    @GetMapping("/list/seatInfo")
+    public BaseResponse<List<Seat>> getSeatInfo(AllSeatQuery allSeatQuery,HttpServletRequest httpServletRequest){
+        if (allSeatQuery==null){
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        User loginUser = userService.getLoginUser(httpServletRequest);
+        if (loginUser==null){
+            throw new BusinessException(ErrorCode.NO_LOGIN);
+        }
+        List<Seat> mySeatQueryList = seatService.getSeatInfo(allSeatQuery,loginUser);
+
+        return ResultUtils.success(mySeatQueryList);
     }
 }

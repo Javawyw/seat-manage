@@ -6,8 +6,8 @@ import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.manage.seatManage.common.ErrorCode;
 import com.manage.seatManage.exception.BusinessException;
+import com.manage.seatManage.model.DTO.AllSeatQuery;
 import com.manage.seatManage.model.DTO.MySeatQuery;
-import com.manage.seatManage.model.DTO.SeatQuery;
 import com.manage.seatManage.model.domain.Seat;
 import com.manage.seatManage.model.domain.User;
 import com.manage.seatManage.model.domain.UserSeat;
@@ -155,39 +155,16 @@ public class SeatServiceImpl extends ServiceImpl<SeatMapper, Seat>
     }
 
     @Override
-    public List<Seat> getSeatInfo(SeatQuery seatQuery, User loginUser) {
-        if (seatQuery==null){
+    public List<Seat> getSeatInfo(AllSeatQuery allSeatQuery, User loginUser) {
+        if (allSeatQuery ==null){
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        if (loginUser==null){
+            throw new BusinessException(ErrorCode.NO_LOGIN);
         }
         QueryWrapper<Seat> queryWrapper = new QueryWrapper<>();
 
-        if (seatQuery!=null){
-
-            List<Long> idList = seatQuery.getIdList();
-            if (CollectionUtils.isNotEmpty(idList)){
-                queryWrapper.eq("id",idList);
-            }
-            int seatNum = seatQuery.getSeatNumber();
-            if (seatNum>=0){
-                queryWrapper.eq("seatNum",seatNum);
-            }
-
-            int floor = seatQuery.getFloor();
-            if (floor>=0){
-                queryWrapper.eq("floor",floor);
-            }
-            int status = seatQuery.getStatus();
-            if (status==1||status==2||status==0){
-                queryWrapper.eq("status",status);
-            }
-
-        }
-        List<Seat> seatList = this.list(queryWrapper);
-        if (seatList==null){
-            return new ArrayList<>();
-        }
-
-        return seatList;
+        return null;
 
     }
 

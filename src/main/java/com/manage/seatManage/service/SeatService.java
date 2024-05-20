@@ -1,5 +1,6 @@
 package com.manage.seatManage.service;
 
+import com.manage.seatManage.model.DTO.AllSeatQuery;
 import com.manage.seatManage.model.DTO.MySeatQuery;
 import com.manage.seatManage.model.DTO.SeatQuery;
 import com.manage.seatManage.model.domain.Seat;
@@ -39,7 +40,8 @@ public interface SeatService extends IService<Seat> {
     /**
      * 得到座位信息
      */
-    List<Seat> getSeatInfo(SeatQuery seatQuery,User loginUser);
+    List<Seat> getSeatInfo(AllSeatQuery allSeatQuery, User loginUser);
+
     /**
      * 得到我预约的座位
      */
