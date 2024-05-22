@@ -149,4 +149,31 @@ public class SeatController implements UserConstant {
 
         return ResultUtils.success(mySeatQueryList);
     }
+    @PostMapping("/useSeat")
+    public BaseResponse<Boolean> useSeat(@RequestParam Long recordId,HttpServletRequest httpServletRequest){
+        if (recordId<=0){
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        User loginUser = userService.getLoginUser(httpServletRequest);
+        if (loginUser==null){
+            throw new BusinessException(ErrorCode.NO_LOGIN);
+
+        }
+        boolean res = seatService.useSeat(recordId,loginUser);
+        return ResultUtils.success(res);
+    }
+    @PostMapping("/quitSeat")
+    public BaseResponse<Boolean> quitSeat(@RequestParam Long recordId,HttpServletRequest httpServletRequest){
+        if (recordId<=0){
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        User loginUser = userService.getLoginUser(httpServletRequest);
+        if (loginUser==null){
+            throw new BusinessException(ErrorCode.NO_LOGIN);
+        }
+        boolean res = seatService.quitSeat(recordId,loginUser);
+
+        return ResultUtils.success(res);
+    }
+
 }

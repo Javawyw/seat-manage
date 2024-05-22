@@ -38,6 +38,10 @@ public class UserSeat implements Serializable {
      * 入座时间
      */
     private Date joinInSeatTime;
+    /**
+     * 退出座位时间
+     */
+    private Date quitTime;
 
     /**
      * 创建时间

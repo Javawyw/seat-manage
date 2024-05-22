@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.manage.seatManage.common.ErrorCode;
 import com.manage.seatManage.exception.BusinessException;
+import com.manage.seatManage.mapper.UserSeatMapper;
 import com.manage.seatManage.model.DTO.AllSeatQuery;
 import com.manage.seatManage.model.DTO.MySeatQuery;
 import com.manage.seatManage.model.domain.Seat;
@@ -40,6 +41,9 @@ public class SeatServiceImpl extends ServiceImpl<SeatMapper, Seat>
 
     @Resource
     private UserSeatService userSeatService;
+
+    @Resource
+    private UserSeatMapper userSeatMapper;
 
 
     @Override
@@ -114,9 +118,9 @@ public class SeatServiceImpl extends ServiceImpl<SeatMapper, Seat>
 
         //修改status
         UpdateWrapper<Seat> updateWrapper = new UpdateWrapper<>();
-        updateWrapper.eq("id",seatId);
-        updateWrapper.set("status",2);
-        updateWrapper.set("choiceTime",choiceSeat.getChoiceTime());
+        updateWrapper.eq("id", seatId);
+        updateWrapper.set("status", 2);
+        updateWrapper.set("choiceTime", choiceSeat.getChoiceTime());
         seatMapper.update(updateWrapper);
 
         return userSeatService.save(userSeat);
@@ -130,23 +134,23 @@ public class SeatServiceImpl extends ServiceImpl<SeatMapper, Seat>
         //1.得到我预约的座位(已实现)
         //2.删除用户座位表中的一行数据
         //3.座位表status更新为0
-        if (id<=0){
+        if (id <= 0) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
-        if (loginUser==null){
+        if (loginUser == null) {
             throw new BusinessException(ErrorCode.NO_LOGIN);
         }
         //2
         QueryWrapper<UserSeat> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("seatId",id);
+        queryWrapper.eq("seatId", id);
         userSeatService.remove(queryWrapper);
         //3
         //修改status
         UpdateWrapper<Seat> updateWrapper = new UpdateWrapper<>();
-        updateWrapper.eq("id",id);
-        updateWrapper.set("status",0);
+        updateWrapper.eq("id", id);
+        updateWrapper.set("status", 0);
         int update = seatMapper.update(updateWrapper);
-        if (update!=id){
+        if (update != id) {
             return false;
         }
         return true;
@@ -156,10 +160,10 @@ public class SeatServiceImpl extends ServiceImpl<SeatMapper, Seat>
 
     @Override
     public List<Seat> getSeatInfo(AllSeatQuery allSeatQuery, User loginUser) {
-        if (allSeatQuery ==null){
+        if (allSeatQuery == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
-        if (loginUser==null){
+        if (loginUser == null) {
             throw new BusinessException(ErrorCode.NO_LOGIN);
         }
         QueryWrapper<Seat> queryWrapper = new QueryWrapper<>();
@@ -169,29 +173,73 @@ public class SeatServiceImpl extends ServiceImpl<SeatMapper, Seat>
     }
 
 
-
     @Override
     public List<Seat> listSeat(MySeatQuery mySeatQuery, User loginUser) {
-        if (mySeatQuery==null){
+        if (mySeatQuery == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
-        if (loginUser==null){
+        if (loginUser == null) {
             throw new BusinessException(ErrorCode.NO_LOGIN);
         }
         //通过userid得到seatId
         //通过seatId得到seat信息
         QueryWrapper<UserSeat> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("userId",loginUser.getId());
+        queryWrapper.eq("userId", loginUser.getId());
         List<UserSeat> userSeatList = userSeatService.list(queryWrapper);
 
         QueryWrapper<Seat> seatQueryWrapper = new QueryWrapper<>();
         List<Seat> seatList = new ArrayList<>();
         for (UserSeat userSeat : userSeatList) {
-            Long seatId  = userSeat.getSeatId();
+            Long seatId = userSeat.getSeatId();
             Seat seat = seatMapper.selectById(seatId);
             seatList.add(seat);
         }
         return seatList;
+    }
+
+    @Override
+    public boolean useSeat(Long recordId, User loginUser) {
+        if (recordId<=0){
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        if (loginUser==null){
+            throw new BusinessException(ErrorCode.NO_LOGIN);
+        }
+        UserSeat userSeat = userSeatService.getById(recordId);
+        long userId = loginUser.getId();
+        UpdateWrapper<UserSeat> updateWrapper = new UpdateWrapper<>();
+        updateWrapper.eq("userId",userId);
+        updateWrapper.eq("id",recordId);
+        updateWrapper.set("joinInSeatTime",new Date());
+
+        int update = userSeatMapper.update(updateWrapper);
+        if (update==recordId){
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public boolean quitSeat(Long recordId, User loginUser) {
+        if (recordId<=0){
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        if (loginUser==null){
+            throw new BusinessException(ErrorCode.NO_LOGIN);
+        }
+        UserSeat userSeat = userSeatService.getById(recordId);
+        long userId = loginUser.getId();
+        UpdateWrapper<UserSeat> updateWrapper = new UpdateWrapper<>();
+        updateWrapper.eq("userId",userId);
+        updateWrapper.eq("id",recordId);
+        updateWrapper.set("quitTime",new Date());
+
+        int update = userSeatMapper.update(updateWrapper);
+        if (update==recordId){
+            return true;
+        }
+        return false;
+
     }
 
 }

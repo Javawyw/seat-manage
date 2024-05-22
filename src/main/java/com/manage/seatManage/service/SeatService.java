@@ -22,17 +22,17 @@ public interface SeatService extends IService<Seat> {
 
     /**
      * 修改信息
-     *
      */
     int updateSeat(Seat seat, User loginUser);
 
     /**
      * 座位预约
      */
-    boolean reservationSeat(Seat seat,User loginUser);
+    boolean reservationSeat(Seat seat, User loginUser);
 
     /**
      * 座位取消
+     *
      * @return
      */
     boolean cancelSeat(int id, User loginUser);
@@ -45,11 +45,23 @@ public interface SeatService extends IService<Seat> {
     /**
      * 得到我预约的座位
      */
-    List<Seat> listSeat(MySeatQuery mySeatQuery,User loginUser);
+    List<Seat> listSeat(MySeatQuery mySeatQuery, User loginUser);
 
     /**
-     * 展现可预约时间
+     * 使用座位
+     *
+     * @param recordId
+     * @param loginUser
+     * @return
      */
+    boolean useSeat(Long recordId, User loginUser);
 
-
+    /**
+     * 退出座位
+     *
+     * @param recordId
+     * @param loginUser
+     * @return
+     */
+    boolean quitSeat(Long recordId, User loginUser);
 }

@@ -10,6 +10,7 @@
             <result property="seatId" column="seatId" jdbcType="BIGINT"/>
             <result property="joinTime" column="joinTime" jdbcType="TIMESTAMP"/>
             <result property="joinInSeatTime" column="joinInSeatTime" jdbcType="TIMESTAMP"/>
+            <result property="quitTime" column="quitTime" jdbcType="TIMESTAMP"/>
             <result property="createTime" column="createTime" jdbcType="TIMESTAMP"/>
             <result property="updateTime" column="updateTime" jdbcType="TIMESTAMP"/>
             <result property="isDelete" column="isDelete" jdbcType="TINYINT"/>
@@ -17,7 +18,7 @@
 
     <sql id="Base_Column_List">
         id,userId,seatId,
-        joinTime,joinInSeatTime,createTime,
+        joinTime,joinInSeatTime,quitTime,createTime,
         updateTime,isDelete
     </sql>
 </mapper>
