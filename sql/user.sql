@@ -7,7 +7,6 @@ create table user
     userAccount  varchar(255) null comment '学号',
     userPassword varchar(255)       not null comment '密码',
     phone        varchar(255) null comment '电话',
-    isValid      tinyint  default 0 not null comment '是否有效',
     createTime   datetime default CURRENT_TIMESTAMP null comment '创建时间',
     updateTime   datetime default CURRENT_TIMESTAMP null on update CURRENT_TIMESTAMP comment '更新时间',
     isDelete     tinyint  default 0 null comment '是否删除',

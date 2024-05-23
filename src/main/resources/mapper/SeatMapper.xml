@@ -8,7 +8,7 @@
         <id property="id" column="id" jdbcType="BIGINT"/>
         <result property="seatNumber" column="seatNumber" jdbcType="INTEGER"/>
         <result property="floor" column="floor" jdbcType="INTEGER"/>
-        <result property="choiceTime" column="choiceTime" jdbcType="TIMESTAMP"/>
+        <result property="choiceTime" column="choice_Time" jdbcType="TIMESTAMP"/>
         <result property="type_" column="type_" jdbcType="INTEGER"/>
         <result property="status" column="status" jdbcType="INTEGER"/>
         <result property="createTime" column="createTime" jdbcType="TIMESTAMP"/>

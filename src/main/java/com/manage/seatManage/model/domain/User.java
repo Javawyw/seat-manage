@@ -45,11 +45,6 @@ public class User implements Serializable {
     private String phone;
 
     /**
-     * 是否有效
-     */
-    private Integer isValid;
-
-    /**
      * 创建时间
      */
     private Date createTime;
@@ -65,10 +60,6 @@ public class User implements Serializable {
     @TableLogic
     private Integer isDelete;
 
-    /**
-     * 
-     */
-    private Integer userStatus;
 
     /**
      * 角色 0 普通用户 1管理员 
